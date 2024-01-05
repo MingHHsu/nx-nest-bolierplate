@@ -1,0 +1,53 @@
+{
+  "name": "nx-nest-bolierplate",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/nx-nest-bolierplate/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/nx-nest-bolierplate",
+        "main": "apps/nx-nest-bolierplate/src/main.ts",
+        "tsConfig": "apps/nx-nest-bolierplate/tsconfig.app.json",
+        "assets": ["apps/nx-nest-bolierplate/src/assets"],
+        "webpackConfig": "apps/nx-nest-bolierplate/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "nx-nest-bolierplate:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "nx-nest-bolierplate:build:development"
+        },
+        "production": {
+          "buildTarget": "nx-nest-bolierplate:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/nx-nest-bolierplate/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
