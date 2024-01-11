@@ -6,6 +6,7 @@ import { StatusMonitorModule } from 'nestjs-status-monitor';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from '@libs/users';
+import { AuthModule } from '@libs/auth';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UsersModule } from '@libs/users';
       imports: [ConfigModule],
     }),
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
