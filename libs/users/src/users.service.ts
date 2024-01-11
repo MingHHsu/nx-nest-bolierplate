@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import * as argon2 from 'argon2';
@@ -21,17 +21,15 @@ export class UsersService {
     private readonly userProfilesRepo: Repository<UserProfileEntity>,
   ) {}
 
+  async findById(id: string) {
+    return await this.usersRepo.findOne({ where: { id } });
+  }
+
   async findByEmail(email: string) {
     return await this.usersRepo.findOne({ where: { email } });
   }
 
   async create(createUserDto: CreateUserDto): Promise<CreateUserResponseDto> {
-    const existedUser = await this.findByEmail(createUserDto.email);
-
-    if (existedUser) {
-      throw new BadRequestException('Email already registered');
-    }
-
     return await this.dataSource.transaction(async (entityManager) => {
       const user = await entityManager.getRepository(UserEntity).save(
         this.usersRepo.create({
@@ -54,7 +52,7 @@ export class UsersService {
     });
   }
 
-  async validateUser(user: UserEntity, password: string) {
-    return await argon2.verify(user.password, password, { type: argon2.argon2id });
+  async checkPassword(userPassword: UserEntity['password'], inputPassword: string) {
+    return await argon2.verify(userPassword, inputPassword, { type: argon2.argon2id });
   }
 }

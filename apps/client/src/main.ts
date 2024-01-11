@@ -8,12 +8,15 @@ import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { HttpExceptionFilter } from '@utils';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || 3000;
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   const config = new DocumentBuilder().setTitle('Booking API').setVersion('0.1').addBearerAuth({
     type: 'http',
