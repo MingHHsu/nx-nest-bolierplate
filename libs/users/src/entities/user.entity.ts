@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { UserProfileEntity } from "./user-profile.entity";
 
 export const UsersRepo = Symbol('UsersRepo');
 
@@ -7,6 +8,10 @@ export const UsersRepo = Symbol('UsersRepo');
 export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
+
+  @OneToOne(() => UserProfileEntity, (profile) => profile.user)
+  @JoinColumn({ name: 'id', referencedColumnName: 'id' })
+  profile!: UserProfileEntity;
 
   @ApiProperty({
     example: 'test@google.com',

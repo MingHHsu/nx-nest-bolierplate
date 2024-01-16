@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { NoTokenProvidedException } from "@utils";
+import { NoTokenProvidedException } from "../exceptions";
 
 @Injectable()
 export class AuthGuard implements CanActivate {

@@ -4,7 +4,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { StatusMonitorModule } from 'nestjs-status-monitor';
 
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UsersModule } from '@libs/users';
 import { AuthModule } from '@libs/auth';
 
@@ -33,6 +32,6 @@ import { AuthModule } from '@libs/auth';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {}

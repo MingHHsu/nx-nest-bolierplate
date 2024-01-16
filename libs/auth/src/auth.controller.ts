@@ -1,17 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
   Post,
   Body,
   Get,
-  BadRequestException,
 } from '@nestjs/common';
-import {  ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { UsersService } from '@libs/users';
 import { AuthService } from './auth.service';
-import { Auth, JWTPayload } from './decorators';
-import { ResourceNotFoundException, WrongPasswordException } from '@utils';
+import { JWTPayload } from './decorators';
+import { Auth, ResourceNotFoundException, WrongPasswordException, wrapResponse } from '@utils';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -36,13 +34,40 @@ export class AuthController {
 
     if (!isValid) throw new WrongPasswordException();
 
-    return await this.authService.generateJWT(user);    
+    return wrapResponse(await this.authService.generateJWT(user));    
   }
 
   @Auth()
   @Get('/me')
   async me(@JWTPayload('userId') userId: string) {
-    return await this.usersService.findById(userId);
+    const me = await this.usersService.findById(userId);
+
+    return wrapResponse(this.usersService.getUser(me));
   }
 
+  @Auth()
+  @Post('/change-password')
+  async changePassword(
+    @JWTPayload('userId') userId: string,
+    @Body('oldPassword') oldPassword: string,
+    @Body('newPassword') newPassword: string,
+  ) {
+    const user = await this.usersService.findById(userId);
+
+    if (!user) {
+      throw new ResourceNotFoundException({
+        resourceName: 'User',
+        references: { id: userId },
+        message: 'User not found',
+      });
+    }
+
+    const validPassword = await this.usersService.checkPassword(user.password, oldPassword);
+
+    if (!validPassword) throw new WrongPasswordException();
+
+    await this.usersService.changePassword(user, newPassword)
+    
+    return wrapResponse('success');
+  }
 }
